@@ -257,7 +257,7 @@ DrawGrid
         STA screenRamLoPtr
 
         LDX #$12
-b1177   LDY #$15
+b1177   LDY #SCREEN_LINE_WIDTH-1
 b1179   LDA #GRID
         STA (screenRamLoPtr),Y
 
@@ -442,9 +442,9 @@ UpdateShipPosition
         JSR GetScreenPointerForCurrentXYPos
 
         LDA (screenRamLoPtr),Y
-        CMP #$07
+        CMP #SHIP
         BEQ b1289
-        CMP #$00
+        CMP #GRID
         BEQ b1289
         JSR CheckIfBumpingAgainstSomething
 b1289   LDA #GRID
@@ -476,9 +476,9 @@ b12B6   LDA joystickInput
         INC currentXPos
 b12BE   JSR GetScreenPointerForCurrentXYPos
         LDA (screenRamLoPtr),Y
-        CMP #$00
+        CMP #GRID
         BEQ b12E1
-        CMP #$01
+        CMP #LEFT_ZAPPER
         BNE b12D6
 b12CB   LDA oldYPos
         STA currentYPos
@@ -486,9 +486,9 @@ b12CB   LDA oldYPos
         STA currentXPos
         JMP j12E9
 
-b12D6   CMP #$02
+b12D6   CMP #BOTTOM_ZAPPER
         BEQ b12CB
-        CMP #$20
+        CMP #SPACE
         BEQ b12CB
         JSR CheckIfBumpingAgainstSomething
 b12E1   LDA currentYPos
@@ -544,9 +544,9 @@ b1321   DEY
         STA VICCRD   ;$900D - frequency of sound osc.4 (noise)
 b1331   LDY #$00
         LDA (bulletScreenRamLoPtr),Y
-        CMP #$00
+        CMP #GRID
         BEQ b1375
-        CMP #$08
+        CMP #BULLET_UP1
         BNE b1342
         LDA #BULLET_UP2
         STA (bulletScreenRamLoPtr),Y
@@ -666,7 +666,7 @@ b13DF   LDA #$14
         JSR DrawCurrentCharacterToScreen
         INC xZapperXPos
         LDA xZapperXPos
-        CMP #$16
+        CMP #SCREEN_LINE_WIDTH
         BNE b13F6
         LDA #$01
         STA xZapperXPos
@@ -846,7 +846,7 @@ b1512   CMP podDecaySequence,X
 
         RTS 
 
-b151E   CMP #$0D
+b151E   CMP #POD1
         BEQ b152F
         DEX 
         LDA podDecaySequence,X
@@ -874,7 +874,7 @@ b152F   LDA #GRID
 ; CheckBulletCollisionWithPod
 ;-------------------------------------------------------------------------
 CheckBulletCollisionWithPod
-        CMP #$00
+        CMP #GRID
         BNE BulletCollidedWithPod
         RTS 
 
@@ -995,7 +995,7 @@ b15D7   CMP podDecaySequence,X
         LDX currentXLaserCharacter
         RTS 
 
-b15E2   CMP #$12
+b15E2   CMP #POD6
         BEQ b15ED
         INX 
         LDA podDecaySequence,X
@@ -1008,13 +1008,13 @@ b15EF   LDA @wbombScreenPtrArrayHi,X
         DEX 
         DEX 
         BNE b15EF
-        LDA #$12
+        LDA #POD6
         RTS 
 
 b15FB   LDA #$1E
         STA @wbombScreenPtrArrayHi,X
         LDA SCREEN_RAM + $002C,Y
-        CMP #$12
+        CMP #POD6
         BEQ b160C
         LDA #$1F
         STA @wbombScreenPtrArrayHi,X
@@ -1029,7 +1029,7 @@ b161B   DEY
         BNE b1613
         PLA 
         TAY 
-        LDA #$0A
+        LDA #BOMB_DOWN
         RTS 
 
 ;-------------------------------------------------------------------------
@@ -1093,7 +1093,7 @@ b1637   LDA @wbombScreenPtrArrayHi - $01,X
 
         ; Check if the bomb has hit something
         LDA (bombScreenLoPtr),Y
-        CMP #$20 ; ignore the grid
+        CMP #SPACE ; ignore the grid
         BEQ b1691
         CMP #BOTTOM_ZAPPER ; ignore the X Zapper
         BEQ b1691
@@ -1292,9 +1292,9 @@ b1797   DEY
 j179A   JSR CheckForCollisionWithShip
         NOP 
         BEQ DrawDroidAtPosition
-        CMP #$20
+        CMP #SPACE
         BEQ b17C6
-        CMP #$02
+        CMP #BOTTOM_ZAPPER
         BEQ b17C6
 j17A8   LDA droidDirectionBitMap,X
         AND #$01
@@ -1312,11 +1312,11 @@ j17B8   JSR CalculateDroidPosition
 
 b17C6   INY 
         LDA (screenRamLoPtr),Y
-        CMP #$20
+        CMP #SPACE
         BEQ b17D8
-        CMP #$02
+        CMP #BOTTOM_ZAPPER
         BEQ b17D8
-        CMP #$01
+        CMP #LEFT_ZAPPER
         BEQ b17E0
         JMP j17A8
 
@@ -1559,16 +1559,16 @@ b1945   JSR s1B67
 ;---------------------------------------------------------------------------------
 CheckIfBulletCollidedWithDroid   
         LDA (bulletScreenRamLoPtr),Y
-        CMP #$13
+        CMP #DROID1
         BEQ BulletCollidedWithDroid
-        CMP #$14
+        CMP #DROID2
         BEQ BulletCollidedWithDroid
-        CMP #$15
+        CMP #DROID3
         BEQ BulletCollidedWithDroid
         RTS 
 
 BulletCollidedWithDroid
-       JMP j1993
+        JMP j1993
 
         .BYTE $0B,$68,$68
         JMP j1993
@@ -1669,19 +1669,19 @@ s19DF
 ; CheckIfBumpingAgainstSomething
 ;-------------------------------------------------------------------------
 CheckIfBumpingAgainstSomething
-        CMP #$13
+        CMP #DROID1
         BEQ b1A08
-        CMP #$14
+        CMP #DROID2
         BEQ b1A08
-        CMP #$15
+        CMP #DROID3
         BEQ b1A08
-        CMP #$06
+        CMP #VERTICAL_LASER2
         BEQ b1A08
-        CMP #$07
+        CMP #SHIP
         BEQ b1A08
-        CMP #$0A
+        CMP #BOMB_DOWN
         BEQ b1A08
-        CMP #$07
+        CMP #SHIP
         BNE b1A03
         RTS 
 
@@ -1858,7 +1858,7 @@ ExplodeShip
 ClearScreenDecrementLives
         ; Clear Screen
         LDY #$00
-        LDA #$20
+        LDA #SPACE
 b1B21   STA SCREEN_RAM + $002C,Y
         STA SCREEN_RAM + $0100,Y
         DEY 
@@ -1971,7 +1971,7 @@ b1BA7   LDA #$02
 
         ; Clear the screen
         LDY #$00
-        LDA #$20
+        LDA #SPACE
 b1BB0   STA SCREEN_RAM + $0016,Y
         STA SCREEN_RAM + $0116,Y
         DEY 
