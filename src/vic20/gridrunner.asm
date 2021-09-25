@@ -228,7 +228,7 @@ b1124   STA SCREEN_RAM + $0000,Y
 ; DrawBannerTopOfScreen   
 ;---------------------------------------------------------------------------------
 DrawBannerTopOfScreen   
-        LDY #$16
+        LDY #SCREEN_LINE_WIDTH
 b1130   LDA topLineText,Y
         STA SCREEN_RAM - $0001,Y
         LDA topLineTextColors,Y
@@ -1080,7 +1080,7 @@ b1637   LDA @wbombScreenPtrArrayHi - $01,X
         ; Move the bomb's position down a line
         LDA @wbombScreenPtrArrayLo - $01,X
         CLC 
-        ADC #$16
+        ADC #SCREEN_LINE_WIDTH
         STA @wbombScreenPtrArrayLo - $01,X
 
         LDA @wbombScreenPtrArrayHi - $01,X
@@ -1107,7 +1107,7 @@ b1637   LDA @wbombScreenPtrArrayHi - $01,X
         CLC 
         ADC #OFFSET_TO_COLOR_RAM
         STA bombScreenHiPtr
-        LDA #LEFT_ZAPPER
+        LDA #WHITE
         STA (bombScreenLoPtr),Y
 
 b1689   JMP j169C
@@ -2053,7 +2053,7 @@ IncrementLevel
         BNE b1D96
         DEC currentLevel
 b1D96   LDY #$00
-        LDA #$20
+        LDA #SPACE
 b1D9A   STA SCREEN_RAM + $002C,Y
         JMP LevelCleared
 
